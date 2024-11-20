@@ -1,0 +1,6 @@
+Django
+Pillow
+opencv-python
+numpy
+scikit-learn
+matplotlib

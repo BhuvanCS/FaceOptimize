@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FaceOptimize - Batch Processing</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .switch-view {
+      font-size: 1rem;
+      color: #007bff;
+      text-decoration: none;
+      background-color: #e9ecef;
+      margin: 15px;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .switch-view:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      color: #333;
+    }
+
+    form {
+      margin-bottom: 20px;
+      padding: 20px;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    input[type="file"] {
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-stats {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .result-stats p {
+      margin: 5px 0;
+      width: 48%;
+      /* Two columns */
+    }
+
+    table {
+      width: 100%;
+      margin-top: 10px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 8px;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #007BFF;
+      color: white;
+    }
+
+    td {
+      background-color: #fdfdfd;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .image-grid img {
+      width: 100%;
+      height: auto;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>FaceOptimize - Batch Processing</h1>
+    <a href="{% url 'single_view' %}" class="switch-view">Switch to Single View</a>
+  </div>
+  <form action="{% url 'batch_view' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="files">Select Images (single or multiple):</label>
+    <input type="file" id="files" name="files" multiple>
+    <button type="submit">Process Images</button>
+  </form>
+
+  {% if results %}
+  <h2>Results</h2>
+  <ul>
+    {% for result in results %}
+    <li>
+      <h3>
+        {{ result.filename }}
+      </h3>
+      <div class="result-stats">
+        <p><strong>Best Preprocessing:</strong>
+          {{ result.best_preprocessing }}
+        </p>
+        <p><strong>Best Segmentation:</strong>
+          {{ result.best_segmentation }}
+        </p>
+        <p><strong>Accuracy:</strong>
+          {{ result.accuracy }}
+        </p>
+        <p><strong>Precision:</strong>
+          {{ result.precision }}
+        </p>
+      </div>
+
+
+      <h4>Why this combination is the best:</h4>
+      <p>
+        {{ result.reason }}
+      </p>
+
+      <h3>Top 5 Combinations for this Image:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Preprocessing</th>
+            <th>Segmentation</th>
+            <th>Accuracy</th>
+            <th>Precision</th>
+            <th>Recall</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for metric in result.metrics_comparison %}
+          <tr>
+            <td>
+              {{ metric.preprocessing }}
+            </td>
+            <td>
+              {{ metric.segmentation }}
+            </td>
+            <td>
+              {{ metric.accuracy }}
+            </td>
+            <td>
+              {{ metric.precision }}
+            </td>
+            <td>
+              {{ metric.recall }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h3>Visual Evidence:</h3>
+      <div class="image-grid">
+        <div>
+          <p><strong>Original Image:</strong></p>
+          <img src="{{ result.image_url }}" alt="Original Image">
+        </div>
+        <div>
+          <p><strong>After Preprocessing:</strong></p>
+          <img src="{{ result.preprocessed_url }}" alt="Preprocessed Image">
+        </div>
+        <div>
+          <p><strong>After Segmentation:</strong></p>
+          <img src="{{ result.segmented_url }}" alt="Segmented Image">
+        </div>
+        <div>
+          <p><strong>Face Detection Output:</strong></p>
+          <img src="{{ result.detected_image_url }}" alt="Detected Image">
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</body>
+
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FaceOptimize - Single Image</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f9;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .switch-view {
+      font-size: 1rem;
+      color: #007bff;
+      text-decoration: none;
+      background-color: #e9ecef;
+      margin: 15px;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .switch-view:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    form p {
+      margin: 0 0 15px 0;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+      color: #555;
+    }
+
+    input[type="file"],
+    select,
+    button {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-top: 5px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .container {
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>FaceOptimize - Single Image</h1>
+      <a href="{% url 'batch_view' %}" class="switch-view">Switch to Batch View</a>
+    </div>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <p>
+        <label for="id_image">Upload Image</label>
+        {{ form.image }}
+      </p>
+
+      <p>
+        <label for="id_preprocessing_technique">Select Preprocessing Technique</label>
+        {{ form.preprocessing_technique }}
+      </p>
+
+      <p>
+        <label for="id_segmentation_technique">Select Segmentation Technique</label>
+        {{ form.segmentation_technique }}
+      </p>
+
+      <button type="submit">Process Image</button>
+    </form>
+  </div>
+</body>
+
+</html>
